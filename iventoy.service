@@ -8,6 +8,7 @@ WorkingDirectory=/opt/iventoy
 ExecStart=/opt/iventoy/iventoy.sh start --proxy-dhcp --no-dhcp
 ExecStop=/opt/iventoy/iventoy.sh stop
 Restart=on-failure
+RemainAfterExit=yes
 
 [Install]
 WantedBy=multi-user.target
