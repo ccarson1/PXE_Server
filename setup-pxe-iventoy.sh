@@ -18,11 +18,15 @@ set -e
 echo "===== PXE + iVentoy Setup Script ====="
 
 # =============================
-# STEP 1 - Configure Static IP
+# STEP 1 - Configure Static IP (Cloud-Init Safe)
 # =============================
 
+echo "Disabling cloud-init network management (if present)..."
+mkdir -p /etc/cloud/cloud.cfg.d
+echo "network: {config: disabled}" > /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg 2>/dev/null || true
+
 echo "Detecting active network interface..."
-INTERFACE=$(ip route | grep default | awk '{print $5}')
+INTERFACE=$(ip -4 route show default | awk '/default/ {print $5; exit}')
 
 if [ -z "$INTERFACE" ]; then
     echo "❌ Could not detect network interface."
@@ -35,9 +39,16 @@ echo "Backing up existing netplan files..."
 mkdir -p /etc/netplan/backup
 cp /etc/netplan/*.yaml /etc/netplan/backup/ 2>/dev/null || true
 
-NETPLAN_FILE="/etc/netplan/01-pxe-static.yaml"
+# Find existing netplan file
+EXISTING_FILE=$(ls /etc/netplan/*.yaml | head -n 1)
 
-echo "Creating static IP configuration..."
+if [ -z "$EXISTING_FILE" ]; then
+    NETPLAN_FILE="/etc/netplan/00-installer-config.yaml"
+else
+    NETPLAN_FILE="$EXISTING_FILE"
+fi
+
+echo "Modifying netplan file: $NETPLAN_FILE"
 
 cat > $NETPLAN_FILE <<EOF
 network:
@@ -57,10 +68,18 @@ network:
           - $DNS2
 EOF
 
+echo "Testing netplan configuration..."
+netplan generate
+netplan try || {
+    echo "❌ Netplan configuration failed."
+    exit 1
+}
+
 echo "Applying netplan..."
 netplan apply
 
 echo "✅ Static IP configured: $STATIC_IP"
+
 
 # =============================
 # STEP 2 - Install iVentoy
