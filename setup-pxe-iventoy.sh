@@ -10,7 +10,6 @@ DNS1="192.168.1.1"
 DNS2="8.8.8.8"
 
 IVENTOY_INSTALL_DIR="/opt/iventoy"
-IVENTOY_DOWNLOAD_URL="https://github.com/ventoy/PXE/releases/latest/download/iventoy-x86_64-linux.tar.gz"
 # =============================
 
 set -e
@@ -80,21 +79,31 @@ netplan apply
 
 echo "✅ Static IP configured: $STATIC_IP"
 
-
 # =============================
 # STEP 2 - Install iVentoy
 # =============================
 
 echo "Installing required packages..."
 apt update
-apt install -y wget tar
+apt install -y wget tar curl
 
 echo "Creating install directory..."
 mkdir -p $IVENTOY_INSTALL_DIR
 cd /tmp
 
-echo "Downloading iVentoy..."
-wget -O iventoy.tar.gz $IVENTOY_DOWNLOAD_URL
+echo "Fetching latest iVentoy release info..."
+IVENTOY_TAR=$(curl -s https://api.github.com/repos/ventoy/PXE/releases/latest \
+  | grep -oP 'browser_download_url": "\K.*linux.*?\.tar\.gz')
+
+if [ -z "$IVENTOY_TAR" ]; then
+    echo "❌ Could not find latest iVentoy release URL"
+    exit 1
+fi
+
+echo "Downloading iVentoy from:"
+echo "$IVENTOY_TAR"
+
+wget -O iventoy.tar.gz "$IVENTOY_TAR"
 
 echo "Extracting iVentoy..."
 tar -xzf iventoy.tar.gz
