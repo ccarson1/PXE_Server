@@ -1,13 +1,10 @@
 # PXE_Server
 
- - sudo chmod +x setup-pxe-iventoy.sh
- - sudo ./setup-pxe-iventoy.sh
-
-#After Install
-
+- cd PXE_Server
+- sudo chmod +x setup-pxe-iventoy.sh
+- sudo ./setup-pxe-iventoy.sh
 - cd /opt/iventoy
 - sudo ./iventoy.sh stop
-- sudo ./iventoy.sh start --proxy-dhcp --no-dhcp
+- cd /home/carson/PXE_Server
 - sudo chmod +x setup-iventoy-service.sh
 - sudo ./setup-iventoy-service.sh
-
