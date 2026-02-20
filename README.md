@@ -11,7 +11,9 @@
 
 
 #Move one ISO file
+
 -sudo cp /path/to/your.iso /opt/iventoy/iso/
 
 #Move multiple ISO files
+
 sudo mv /path/to/isos/*.iso /opt/iventoy/iso/
