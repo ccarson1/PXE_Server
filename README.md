@@ -5,7 +5,7 @@
 - sudo ./setup-pxe-iventoy.sh
 - cd /opt/iventoy
 - sudo ./iventoy.sh stop
-- cd /home/carson/PXE_Server
+- cd /home/[user]/PXE_Server
 - sudo chmod +x setup-iventoy-service.sh
 - sudo ./setup-iventoy-service.sh
 
