@@ -2,6 +2,7 @@
 
 - cd PXE_Server
 - sudo chmod +x setup-pxe-iventoy.sh
+  (Change the ip address of the address of your server. The default is set to [192.168.1.50])  
 - sudo ./setup-pxe-iventoy.sh
 - cd /opt/iventoy
 - sudo ./iventoy.sh stop
